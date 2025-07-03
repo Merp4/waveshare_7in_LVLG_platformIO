@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "waveshare_st7262_lvgl.h": "c",
+        "lv_demo_benchmark.h": "c",
+        "bg_image.c": "cpp",
+        "dash_image.c": "cpp"
+    }
+}
