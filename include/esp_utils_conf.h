@@ -32,6 +32,7 @@
  *  - ESP_UTILS_LOG_LEVEL_NONE:    No log output (highest level) (Minimum code size)
  */
 #define ESP_UTILS_CONF_LOG_LEVEL                            (ESP_UTILS_LOG_LEVEL_INFO)
+#define ESP_UTILS_CONF_LOG_IMPL_TYPE                        (ESP_UTILS_CONF_LOG_IMPL_STDLIB)
 #if ESP_UTILS_CONF_LOG_LEVEL == ESP_UTILS_LOG_LEVEL_DEBUG
 
     /**
@@ -77,6 +78,61 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// File Version ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// C++ Global Memory Allocation ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * If enabled, the driver will override `new` and `delete` operators to use global memory allocator
+ */
+#define ESP_UTILS_CONF_MEM_ENABLE_CXX_GLOB_ALLOC            (0)
+#if ESP_UTILS_CONF_MEM_ENABLE_CXX_GLOB_ALLOC
+/**
+ * If enabled, the driver will use global memory allocation by default, otherwise, the driver will use
+ * the standard `malloc` and `free` by default
+ */
+#define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_DEFAULT_ENABLE    (1)
+
+/**
+ * C++ global memory allocation type, choose one of the following:
+ *  - ESP_UTILS_MEM_ALLOC_TYPE_ESP:         Use the ESP-IDF memory allocation functions (heap_caps_aligned_alloc, heap_caps_free)
+ *  - ESP_UTILS_MEM_ALLOC_TYPE_MICROPYTHON: Use the MicroPython memory allocation functions (m_malloc, m_free)
+ *  - ESP_UTILS_MEM_ALLOC_TYPE_CUSTOM:      Use custom memory allocation functions (ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_CUSTOM_MALLOC,
+ *                                          ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_CUSTOM_FREE)
+ */
+#define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_TYPE              (ESP_UTILS_MEM_ALLOC_TYPE_ESP)
+#if ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_TYPE == ESP_UTILS_MEM_ALLOC_TYPE_ESP
+
+/**
+ * ESP memory caps, choose one of the following:
+ *  - ESP_UTILS_MEM_ALLOC_ESP_CAPS_DEFAULT:    Default
+ *  - ESP_UTILS_MEM_ALLOC_ESP_CAPS_SRAM:       Internal RAM (SRAM)
+ *  - ESP_UTILS_MEM_ALLOC_ESP_CAPS_PSRAM:      External RAM (PSRAM)
+ */
+#   define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_ESP_CAPS       (ESP_UTILS_MEM_ALLOC_ESP_CAPS_DEFAULT)
+#   define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_ESP_ALIGN      (1)
+
+#elif ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_TYPE == ESP_UTILS_MEM_ALLOC_TYPE_CUSTOM
+
+#   define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_CUSTOM_INCLUDE     "esp_heap_caps.h"
+#   define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_CUSTOM_NEW(x)      heap_caps_aligned_alloc(1, x, MALLOC_CAP_DEFAULT | MALLOC_CAP_8BIT)
+#   define ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_CUSTOM_DELETE(x)   heap_caps_free(x)
+
+#endif // ESP_UTILS_CONF_MEM_CXX_GLOB_ALLOC_TYPE
+
+#endif // ESP_UTILS_CONF_MEM_ENABLE_CXX_GLOB_ALLOC
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// Plugin Configurations /////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief If enabled, the driver will support plugin mechanism
+ *
+ * @note This configuration requires C++ RTTI support
+ */
+#define ESP_UTILS_CONF_PLUGIN_SUPPORT                       (0)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////// File Version ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Do not change the following versions, they are used to check if the configurations in this file are compatible with
  * the current version of `esp_utils_conf.h` in the library. The detailed rules are as follows:
@@ -88,7 +144,7 @@
  *   3. Even if the patch version is not consistent, it will not affect normal functionality.
  */
 #define ESP_UTILS_CONF_FILE_VERSION_MAJOR 1
-#define ESP_UTILS_CONF_FILE_VERSION_MINOR 2
+#define ESP_UTILS_CONF_FILE_VERSION_MINOR 5
 #define ESP_UTILS_CONF_FILE_VERSION_PATCH 0
 
 // *INDENT-ON*
