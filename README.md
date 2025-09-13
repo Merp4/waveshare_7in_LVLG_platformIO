@@ -1,4 +1,4 @@
-Updated/modified version of PlatformIO sample/demo project.
+Updated/modified version of PlatformIO sample/demo project by [antoinec4](https://github.com/antoinec4/waveshare_7in_LVLG_platformIO).
 
 ---
 
